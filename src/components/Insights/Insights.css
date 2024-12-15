@@ -1,0 +1,71 @@
+.insights-container {
+    padding: 20px;
+    color: #d4f4f4;
+  }
+  
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .tab-button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background: transparent;
+    border: none;
+    color: #f0e800;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .tab-button.active {
+    color: #00A0A0;
+    border-bottom: 3px solid #00A0A0;
+  }
+  
+  .section {
+    display: none; /* Hide sections by default */
+  }
+  
+  .section.active {
+    display: block; /* Only display the active section */
+  }
+  
+  .chart-card {
+    background-color: #062c30;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    overflow: hidden; /* Keeps the canvas within the card */
+  }
+  
+  .chart-card h3 {
+    color: #f0e800;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+  
+  .chart-card canvas {
+    width: auto !important; /* Adjust width automatically to prevent stretching */
+    height: 300px !important; /* Fixed height for consistency */
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .tabs {
+      flex-direction: column;
+    }
+  
+    .tab-button {
+      width: 100%; /* Full width tabs on smaller screens */
+      text-align: center;
+    }
+  }
+  
