@@ -6,7 +6,7 @@ import { TbDeviceTabletSearch } from "react-icons/tb"; // Import the new search 
 
 Modal.setAppElement("#root");
 
-const DengueDataList = () => {
+const NATDataList = () => {
   const [natData, setNatData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [editingId, setEditingId] = useState(null);
@@ -276,4 +276,4 @@ const DengueDataList = () => {
   );
 };
 
-export default DengueDataList;
+export default NATDataList;

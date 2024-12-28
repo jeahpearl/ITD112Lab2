@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import AddDengueData from "./AddDengueData";
-import DengueDataList from "./DengueDataList";
+import AddNATData from "./AddNATData";
+import NATDataList from "./NATDataList";
 import CsvUpload from "./CsvUpload";
 import Dashboard from "./components/Dashboard/Dashboard";  // Import the Dashboard component
 import Insights from "./components/Insights/Insights";
@@ -91,7 +91,7 @@ function App() {
                   Upload CSV
                 </button>
               </div>
-              <DengueDataList />
+              <NATDataList />
             </div>
           </div>
         )}
@@ -110,7 +110,7 @@ function App() {
               </button>
             </div>
             <div className="add-data-form">
-              <AddDengueData />
+              <AddNATData />
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { collection, addDoc } from "firebase/firestore";  
 import { db } from "./firebase";  
 
-const AddDengueData = () => {
+const AddNATData = () => {
   const [respondents, setRespondents] = useState("");
   const [age, setAge] = useState("");
   const [sex, setSex] = useState("");
@@ -135,4 +135,4 @@ const AddDengueData = () => {
   );
 };
 
-export default AddDengueData;
+export default AddNATData;

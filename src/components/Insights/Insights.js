@@ -32,6 +32,7 @@ ChartJS.register(
 const Insights = () => {
   const [data, setData] = useState([]);
   const [selectedVariable, setSelectedVariable] = useState("academic_performance");
+  const [selectedCategory, setSelectedCategory] = useState("sex"); // Add this
   const [activeTab, setActiveTab] = useState("distributions");
   const [activeSubTab, setActiveSubTab] = useState("Categorical vs. Categorical");
   const [firstCategory, setFirstCategory] = useState("sex");
@@ -53,57 +54,44 @@ const Insights = () => {
 
   // Chart Data Calculations
 
-    const genderDistributionData = useMemo(() => ({
-      labels: ["Male", "Female"],
-      datasets: [
-        {
-          label: "Gender Distribution",
-          data: [
-            data.filter((item) => item.sex === "Male").length,
-            data.filter((item) => item.sex === "Female").length,
-          ],
-          backgroundColor: ["#00A0A0", "#FFA500"],
-        },
-      ],
-    }), [data]);
-    
-    const genderPieData = useMemo(() => {
-      const total = data.length;
-      const maleCount = data.filter((item) => item.sex === "Male").length;
-      const femaleCount = data.filter((item) => item.sex === "Female").length;
-    
-      const malePercentage = (maleCount / total) * 100;
-      const femalePercentage = (femaleCount / total) * 100;
-    
-      return {
-        labels: ["Male", "Female"],
-        datasets: [
-          {
-            label: "Gender Proportion",
-            data: [maleCount, femaleCount],
-            backgroundColor: ["#00A0A0", "#FFA500"],
-            hoverBackgroundColor: ["#007575", "#CC8400"],
-          },
-        ],
-        percentages: [malePercentage, femalePercentage], // Store percentages for tooltips
-      };
-    }, [data]);
-    
+    const categoryDistributionData = useMemo(() => {
+  const categoryMapping = {
+    sex: ["Male", "Female"],
+    academic_description: [
+      "Did not meet expectation",
+      "Fairly Satisfactory",
+      "Very Satisfactory",
+      "Satisfactory",
+      "Outstanding",
+    ],
+    iq: ["High", "Average", "Low"],
+    type_of_school: ["Private", "Public"],
+    socio_economic_status: [
+      "Above poverty line",
+      "On poverty line",
+      "Below poverty line",
+    ],
+    study_habit: ["Good", "Excellent", "Poor"],
+  };
 
-    const socioEconomicData = useMemo(() => ({
-      labels: ["Above Poverty Line", "On Poverty Line", "Below Poverty Line"],
-      datasets: [
-        {
-          label: "Socio-Economic Status",
-          data: [
-            data.filter((item) => item.socio_economic_status === "Above poverty line").length,
-            data.filter((item) => item.socio_economic_status === "On poverty line").length,
-            data.filter((item) => item.socio_economic_status === "Below poverty line").length,
-          ],
-          backgroundColor: ["#00A0A0", "#F0E800", "#FFA500"],
-        },
-      ],
-    }), [data]);
+  const labels = categoryMapping[selectedCategory];
+  const counts = labels.map(
+    (label) => data.filter((item) => item[selectedCategory] === label).length
+  );
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: `${selectedCategory.replace(/_/g, " ")} Distribution`,
+        data: counts,
+        backgroundColor: labels.map(
+          (_, index) => ["#00A0A0", "#FFA500", "#F0E800", "#E57373", "#AED581"][index % 5]
+        ),
+      },
+    ],
+  };
+}, [data, selectedCategory]);
     
 
     const lineChartData = useMemo(() => {
@@ -337,39 +325,6 @@ const numericalInsights = useMemo(() => {
 
 /* end for num vs num insights */
 
-  const socioEconomicProportionData = useMemo(() => {
-    const total = data.length;
-    const abovePoverty = data.filter(
-      (item) => item.socio_economic_status === "Above poverty line"
-    ).length;
-    const onPoverty = data.filter(
-      (item) => item.socio_economic_status === "On poverty line"
-    ).length;
-    const belowPoverty = data.filter(
-      (item) => item.socio_economic_status === "Below poverty line"
-    ).length;
-  
-    const abovePovertyPercentage = (abovePoverty / total) * 100;
-    const onPovertyPercentage = (onPoverty / total) * 100;
-    const belowPovertyPercentage = (belowPoverty / total) * 100;
-  
-    return {
-      labels: ["Above Poverty Line", "On Poverty Line", "Below Poverty Line"],
-      datasets: [
-        {
-          label: "Socio-Economic Proportion",
-          data: [abovePoverty, onPoverty, belowPoverty],
-          backgroundColor: ["#00A0A0", "#F0E800", "#FFA500"],
-          hoverBackgroundColor: ["#007575", "#CCCC00", "#CC8400"],
-          hoverOffset: 4,
-        },
-      ],
-      percentages: [abovePovertyPercentage, onPovertyPercentage, belowPovertyPercentage],
-    };
-  }, [data]);
-  
-
-
   return (
     <div className="insights-container">
       <div className="tabs">
@@ -386,97 +341,91 @@ const numericalInsights = useMemo(() => {
       <div className="content">
                {activeTab === "distributions" && (
             <>
-              <div className="chart-row">
-                <div className="chart-column chart-card">
-                  <h3>Gender Distribution</h3>
-                  <Bar
-                    data={genderDistributionData}
-                    options={{
-                      plugins: {
-                        tooltip: { mode: "index", intersect: false },
-                        legend: { position: "top" },
-                      },
-                      scales: {
-                        x: { title: { display: true, text: "Gender" } },
-                        y: { title: { display: true, text: "Count" } },
-                      },
-                    }}
-                  />
-                </div>
+             <div className="content">
+  {activeTab === "distributions" && (
+    <>
+      {/* Dropdown for selecting category */}
+      <div className="dropdown-container">
+        <label className="dropdown-label">Select Category:</label>
+        <select
+          className="variable-dropdown"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="sex">Gender</option>
+          <option value="academic_description">Academic Description</option>
+          <option value="iq">IQ</option>
+          <option value="type_of_school">Type of School</option>
+          <option value="socio_economic_status">Socio-Economic Status</option>
+          <option value="study_habit">Study Habit</option>
+        </select>
+      </div>
+
+                   <div className="chart-row">
                       <div className="chart-column chart-card">
-                        <h3>Total Gender Proportion</h3>
+                        <h3>{selectedCategory.replace(/_/g, " ")} Distribution</h3>
+                        <Bar
+                          data={categoryDistributionData} // Update to use `categoryDistributionData`
+                          options={{
+                            plugins: {
+                              tooltip: { mode: "index", intersect: false },
+                              legend: { position: "top" },
+                            },
+                            scales: {
+                              x: { title: { display: true, text: selectedCategory.replace(/_/g, " ") } },
+                              y: { title: { display: true, text: "Count" } },
+                            },
+                          }}
+                        />
+                      </div>
+                      <div className="chart-column chart-card">
+                        <h3>{selectedCategory.replace(/_/g, " ")} Proportion</h3>
                         <Doughnut
-                            data={genderPieData}
-                            options={{
-                              plugins: {
-                                tooltip: {
-                                  callbacks: {
-                                    label: function (tooltipItem) {
-                                      const value = tooltipItem.raw;
-                                      const percentage = genderPieData.percentages[tooltipItem.dataIndex];
-                                      return `${value} (${percentage.toFixed(2)}%)`; // Display count and percentage
-                                    },
+                          data={categoryDistributionData} // Update to use `categoryDistributionData`
+                          options={{
+                            plugins: {
+                              tooltip: {
+                                callbacks: {
+                                  label: function (tooltipItem) {
+                                    const value = tooltipItem.raw;
+                                    const total = categoryDistributionData.datasets[0].data.reduce(
+                                      (a, b) => a + b,
+                                      0
+                                    );
+                                    const percentage = ((value / total) * 100).toFixed(2);
+                                    return `${value} (${percentage}%)`;
                                   },
                                 },
-                                legend: { position: "top" },
                               },
-                            }}
-                          />
+                              legend: { position: "top" },
+                            },
+                          }}
+                        />
                       </div>
                     </div>
-                    <div className="insight-container">
-                {`The Gender Distribution and Proportion charts indicate there are ${genderDistributionData.datasets[0].data[0]} Male students 
-                (${genderPieData.percentages[0].toFixed(2)}%) and ${genderDistributionData.datasets[0].data[1]} Female students 
-                (${genderPieData.percentages[1].toFixed(2)}%).`}
+                  </>
+                )}
               </div>
 
-                     <div className="chart-row">
-                          {/* Socio-Economic Status Distribution Bar Chart */}
-                          <div className="chart-column chart-card">
-                            <h3>Socio-Economic Status Distribution</h3>
-                            <Bar
-                              data={socioEconomicData}
-                              options={{
-                                plugins: {
-                                  tooltip: { mode: "index", intersect: false },
-                                  legend: { position: "top" },
-                                },
-                                scales: {
-                                  x: { title: { display: true, text: "Socio-Economic Status" } },
-                                  y: { title: { display: true, text: "Count" } },
-                                },
-                              }}
-                    />
-                  </div>
-
-                {/* Socio-Economic Proportion Doughnut Chart */}
-                <div className="chart-column chart-card">
-                  <h3>Socio-Economic Proportion</h3>
-                  <Doughnut
-                    data={socioEconomicProportionData} // Use the already defined proportion data
-                    options={{
-                      plugins: {
-                        tooltip: {
-                          callbacks: {
-                            label: function (tooltipItem) {
-                              const value = tooltipItem.raw;
-                              const percentage = socioEconomicProportionData.percentages[tooltipItem.dataIndex];
-                              return `${value} (${percentage.toFixed(2)}%)`; // Show count and percentage
-                            },
-                          },
-                        },
-                        legend: { position: "top" },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
               <div className="insight-container">
-                {`The Socio-Economic charts reveal that ${socioEconomicProportionData.datasets[0].data[2]} students (${socioEconomicProportionData.percentages[2].toFixed(2)}%) 
-                fall below the poverty line, ${socioEconomicProportionData.datasets[0].data[0]} students (${socioEconomicProportionData.percentages[0].toFixed(2)}%) 
-                are above, and ${socioEconomicProportionData.datasets[0].data[1]} students (${socioEconomicProportionData.percentages[1].toFixed(2)}%) 
-                are on the poverty line.`}
-              </div>
+  {categoryDistributionData && categoryDistributionData.datasets[0].data.length > 0 ? (
+    (() => {
+      const { datasets, labels } = categoryDistributionData;
+      const data = datasets[0].data; // Access counts
+      const total = data.reduce((sum, value) => sum + value, 0);
+      
+      // Find largest and smallest groups
+      const maxIndex = data.indexOf(Math.max(...data));
+      const minIndex = data.indexOf(Math.min(...data));
+
+      // Dynamic insight based on selected category
+      return `The ${selectedCategory.replace(/_/g, " ")} charts indicate the largest group is "${labels[maxIndex]}" with ${data[maxIndex]} entries (${((data[maxIndex] / total) * 100).toFixed(2)}%), and the smallest group is "${labels[minIndex]}" with ${data[minIndex]} entries (${((data[minIndex] / total) * 100).toFixed(2)}%).`;
+    })()
+  ) : (
+    "No data available for the selected category."
+  )}
+</div>
+
 
           </>
         )}
